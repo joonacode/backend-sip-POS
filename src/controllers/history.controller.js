@@ -12,12 +12,44 @@ const history = {
       })
   },
   insertHistory: (req, res) => {
-    const { invoice, cashier, orders, amount } = req.body
-    const newHistory = { invoice, cashier, orders, amount }
+    const {
+      invoice,
+      cashier,
+      orders,
+      amount
+    } = req.body
+    const newHistory = {
+      invoice,
+      cashier,
+      orders,
+      amount
+    }
     historyModels.insertHistory(newHistory)
       .then(response => {
         const resultHistory = response
         helpers.response(res, resultHistory, res.statusCode, helpers.status.insert, null)
+      }).catch(err => {
+        helpers.response(res, [], err.statusCode, null, null, err)
+      })
+  },
+  updateHistory: (req, res) => {
+    const {
+      invoice,
+      cashier,
+      orders,
+      amount
+    } = req.body
+    const newHistory = {
+      invoice,
+      cashier,
+      orders,
+      amount
+    }
+    const id = req.params.id
+    historyModels.updateHistory(newHistory, id)
+      .then(response => {
+        const resultHistory = response
+        helpers.response(res, resultHistory, res.statusCode, helpers.status.update, null)
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)
       })

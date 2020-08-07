@@ -12,8 +12,12 @@ module.exports = {
     }
     resJson.success = !error
     resJson.status_code = status
-    if (error) { resJson.error = error || null }
-    if (message) { resJson.message = message }
+    if (error) {
+      resJson.error = error || null
+    }
+    if (message) {
+      resJson.message = message
+    }
     resJson.results = results
 
     return res.status(status).json(resJson)

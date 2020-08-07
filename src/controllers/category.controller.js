@@ -12,8 +12,12 @@ const product = {
       })
   },
   insertCategory: (req, res) => {
-    const { name } = req.body
-    const newCategory = { name }
+    const {
+      name
+    } = req.body
+    const newCategory = {
+      name
+    }
     categoryModels.insertCategory(newCategory)
       .then(response => {
         const resultCategory = response
@@ -23,8 +27,13 @@ const product = {
       })
   },
   updateCategory: (req, res) => {
-    const { name } = req.body
-    const newCategory = { name, updatedAt: new Date() }
+    const {
+      name
+    } = req.body
+    const newCategory = {
+      name,
+      updatedAt: new Date()
+    }
     const id = req.params.id
     categoryModels.updateCategory(newCategory, id)
       .then(response => {
