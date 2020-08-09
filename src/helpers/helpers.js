@@ -7,6 +7,7 @@ module.exports = {
       resJson.total = links.total
       resJson.per_page = links.per_page
       resJson.count = links.count
+      resJson.current_page = links.current_page
       resJson.total_pages = links.total_pages
       resJson._links = links._links
     }
@@ -30,16 +31,17 @@ module.exports = {
   },
   links: (limit, start, total, count) => {
     const last = Math.ceil(total / limit)
-    const numStart = Number(start)
+    const numStart = Number(start) === 0 ? 1 : Number(start)
     const result = {
       per_page: limit,
       count: count,
       total: total,
+      current_page: numStart,
       total_pages: last,
       _links: {
-        self: `${baseUrl}/product?limit=${limit}&start=${start}`,
-        next: count < limit ? null : `${baseUrl}/product?limit=${limit}&start=${numStart + 1}`,
-        prev: start === 0 || start === 1 ? null : `${baseUrl}/product?limit=${limit}&start=${start - 1}`,
+        self: `${baseUrl}/product?limit=${limit}&start=${numStart}`,
+        next: count < limit || numStart === last ? null : `${baseUrl}/product?limit=${limit}&start=${numStart + 1}`,
+        prev: numStart === 0 || numStart === 1 ? null : `${baseUrl}/product?limit=${limit}&start=${numStart - 1}`,
         first: `${baseUrl}/product?limit=${limit}&start=1`,
         last: `${baseUrl}/product?limit=${limit}&start=${last}`
       }
@@ -63,5 +65,4 @@ module.exports = {
       }
     }
   }
-
 }

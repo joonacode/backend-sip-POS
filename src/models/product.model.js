@@ -24,7 +24,7 @@ const product = {
     return queryHelper('DELETE FROM products WHERE id = ?', id)
   },
   getProductById: (id) => {
-    return queryHelper('SELECT * FROM products WHERE id = ?', id)
+    return queryHelper('SELECT products.*, categories.name as categoryName FROM products JOIN categories on products.idCategory = categories.id WHERE products.id = ?', id)
   }
 }
 
