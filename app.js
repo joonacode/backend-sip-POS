@@ -7,7 +7,7 @@ const cors = require('cors')
 const routes = require('./src/routes')
 const PORT = process.env.PORT || 5050
 
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 app.use(morgan('dev'))

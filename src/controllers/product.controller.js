@@ -14,11 +14,11 @@ const product = {
     if (search) {
       productModels.getTotalSearch(search).then(response => {
         totalData = response.length
-      })
+      }).catch(err => console.log(err))
     } else {
       productModels.getTotal().then(response => {
         totalData = response[0].total
-      })
+      }).catch(err => console.log(err))
     }
     productModels.getAllProduct(limit, offset, search, order, sorting)
       .then(response => {

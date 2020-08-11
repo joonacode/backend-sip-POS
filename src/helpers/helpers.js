@@ -39,11 +39,11 @@ module.exports = {
       current_page: numStart,
       total_pages: last,
       _links: {
-        self: `${baseUrl}/product?limit=${limit}&start=${numStart}`,
-        next: count < limit || numStart === last ? null : `${baseUrl}/product?limit=${limit}&start=${numStart + 1}`,
-        prev: numStart === 0 || numStart === 1 ? null : `${baseUrl}/product?limit=${limit}&start=${numStart - 1}`,
-        first: `${baseUrl}/product?limit=${limit}&start=1`,
-        last: `${baseUrl}/product?limit=${limit}&start=${last}`
+        self: `${baseUrl}/products?limit=${limit}&page=${numStart}`,
+        next: count < limit || numStart === last ? null : `${baseUrl}/products?limit=${limit}&page=${numStart + 1}`,
+        prev: numStart === 0 || numStart === 1 ? null : `${baseUrl}/products?limit=${limit}&page=${numStart - 1}`,
+        first: `${baseUrl}/products?limit=${limit}&page=1`,
+        last: `${baseUrl}/products?limit=${limit}&page=${last}`
       }
     }
     return result
