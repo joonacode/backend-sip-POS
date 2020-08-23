@@ -4,42 +4,55 @@ const errorHandling = require('../helpers/errorHandling')
 
 const history = {
   getAllHistory: (req, res) => {
-    historyModels.getAllHistory()
+    const order = req.query.order
+    historyModels.getAllHistory(order)
       .then(response => {
         const resultHistory = response
+        helpers.redisInstance().setex('getAllHistories', 60 * 60 * 12, JSON.stringify(resultHistory))
         helpers.response(res, resultHistory, res.statusCode, helpers.status.found, null)
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)
       })
   },
   insertHistory: (req, res) => {
-    const { invoice, cashier, orders, amount } = req.body
+    const {
+      invoice,
+      cashier,
+      orders,
+      amount
+    } = req.body
     const newCheck = [{
-      name: 'Invoice',
-      value: invoice,
-      type: 'string'
-    },
-    {
-      name: 'Cashier',
-      value: cashier,
-      type: 'string'
-    },
-    {
-      name: 'Orders',
-      value: orders,
-      type: 'string'
-    },
-    {
-      name: 'Amount',
-      value: amount,
-      type: 'number'
-    }
+        name: 'Invoice',
+        value: invoice,
+        type: 'string'
+      },
+      {
+        name: 'Cashier',
+        value: cashier,
+        type: 'string'
+      },
+      {
+        name: 'Orders',
+        value: orders,
+        type: 'string'
+      },
+      {
+        name: 'Amount',
+        value: amount,
+        type: 'number'
+      }
     ]
     errorHandling(res, newCheck, () => {
-      const newHistory = { invoice, cashier, orders, amount }
+      const newHistory = {
+        invoice,
+        cashier,
+        orders,
+        amount
+      }
       historyModels.insertHistory(newHistory)
         .then(response => {
           const resultHistory = response
+          helpers.redisInstance().del('getAllHistories')
           helpers.response(res, resultHistory, res.statusCode, helpers.status.insert, null)
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err)
@@ -47,27 +60,32 @@ const history = {
     })
   },
   updateHistory: (req, res) => {
-    const { invoice, cashier, orders, amount } = req.body
+    const {
+      invoice,
+      cashier,
+      orders,
+      amount
+    } = req.body
     const newCheck = [{
-      name: 'Invoice',
-      value: invoice,
-      type: 'string'
-    },
-    {
-      name: 'Cashier',
-      value: cashier,
-      type: 'string'
-    },
-    {
-      name: 'Orders',
-      value: orders,
-      type: 'string'
-    },
-    {
-      name: 'Amount',
-      value: amount,
-      type: 'number'
-    }
+        name: 'Invoice',
+        value: invoice,
+        type: 'string'
+      },
+      {
+        name: 'Cashier',
+        value: cashier,
+        type: 'string'
+      },
+      {
+        name: 'Orders',
+        value: orders,
+        type: 'string'
+      },
+      {
+        name: 'Amount',
+        value: amount,
+        type: 'number'
+      }
     ]
 
     errorHandling(res, newCheck, () => {
@@ -81,6 +99,7 @@ const history = {
       historyModels.updateHistory(newHistory, id)
         .then(response => {
           const resultHistory = response
+          helpers.redisInstance().del('getAllHistories')
           helpers.response(res, resultHistory, res.statusCode, helpers.status.update, null)
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err)
@@ -92,6 +111,7 @@ const history = {
     historyModels.deleteHistory(id)
       .then(response => {
         const resultHistory = response
+        helpers.redisInstance().del('getAllHistories')
         helpers.response(res, resultHistory, res.statusCode, helpers.status.delete, null)
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)

@@ -33,34 +33,55 @@ const product = {
   },
 
   insertProduct: (req, res) => {
-    const { name, price, image, idCategory } = req.body
-    const newCheck = [{
-      name: 'Name',
-      value: name,
-      type: 'string'
-    },
-    {
-      name: 'Price',
-      value: price,
-      type: 'number'
-    },
-    {
-      name: 'Image',
-      value: image,
-      type: 'string'
-    },
-    {
-      name: 'Category',
-      value: idCategory,
-      type: 'number'
+    const {
+      name,
+      price,
+      idCategory
+    } = req.body
+    let image
+    if (req.file) {
+      image = req.file.path
     }
+    if (req.uploadErrorMessage) {
+      return helpers.response(res, [], 400, null, null, [req.uploadErrorMessage])
+    }
+    const newCheck = [{
+        name: 'Name',
+        value: name,
+        type: 'string'
+      },
+      {
+        name: 'Image',
+        value: image,
+        type: 'string'
+      },
+      {
+        name: 'Price',
+        value: price,
+        type: 'number'
+      },
+      {
+        name: 'Category',
+        value: idCategory,
+        type: 'number'
+      }
     ]
     errorHandling(res, newCheck, () => {
-      const newProduct = { name, price, image, idCategory }
+      const newProduct = {
+        name,
+        price,
+        image: `${process.env.BASE_URL}/${image}`,
+        idCategory
+      }
       productModels.insertProduct(newProduct)
         .then(response => {
-          const resultProduct = response
-          helpers.response(res, resultProduct, res.statusCode, helpers.status.insert, null)
+          productModels.getProductById(response.insertId)
+            .then(response => {
+              const resultProduct = response
+              helpers.response(res, resultProduct, res.statusCode, helpers.status.insert, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err.errno === 1452 ? ['Category not found'] : err)
         })
@@ -68,27 +89,32 @@ const product = {
   },
 
   updateProduct: (req, res) => {
-    const { name, price, image, idCategory } = req.body
+    const {
+      name,
+      price,
+      image,
+      idCategory
+    } = req.body
     const newCheck = [{
-      name: 'Name',
-      value: name,
-      type: 'string'
-    },
-    {
-      name: 'Price',
-      value: price,
-      type: 'number'
-    },
-    {
-      name: 'Image',
-      value: image,
-      type: 'string'
-    },
-    {
-      name: 'Category',
-      value: idCategory,
-      type: 'number'
-    }
+        name: 'Name',
+        value: name,
+        type: 'string'
+      },
+      {
+        name: 'Price',
+        value: price,
+        type: 'number'
+      },
+      {
+        name: 'Image',
+        value: image,
+        type: 'string'
+      },
+      {
+        name: 'Category',
+        value: idCategory,
+        type: 'number'
+      }
     ]
 
     errorHandling(res, newCheck, () => {

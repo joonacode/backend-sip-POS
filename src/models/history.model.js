@@ -1,8 +1,8 @@
 const queryHelper = require('../helpers/query')
 
 const history = {
-  getAllHistory: () => {
-    return queryHelper('SELECT * FROM histories')
+  getAllHistory: (order) => {
+    return queryHelper(`SELECT * FROM histories ORDER BY id ${!order ? 'desc' : order}`)
   },
   insertHistory: (newHistory) => {
     return queryHelper('INSERT INTO histories SET ?', newHistory)

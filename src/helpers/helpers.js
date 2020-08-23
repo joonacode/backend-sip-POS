@@ -1,5 +1,6 @@
 require('dotenv').config()
 const baseUrl = `http://localhost:${process.env.PORT}/api/v1`
+const redis = require('redis')
 module.exports = {
   response: (res, results, status, message, links, error) => {
     const resJson = {}
@@ -39,11 +40,11 @@ module.exports = {
       current_page: numStart,
       total_pages: last,
       _links: {
-        self: `${baseUrl}/products?limit=${limit}&page=${numStart}`,
-        next: count < limit || numStart === last ? null : `${baseUrl}/products?limit=${limit}&page=${numStart + 1}`,
-        prev: numStart === 0 || numStart === 1 ? null : `${baseUrl}/products?limit=${limit}&page=${numStart - 1}`,
-        first: `${baseUrl}/products?limit=${limit}&page=1`,
-        last: `${baseUrl}/products?limit=${limit}&page=${last}`
+        self: numStart,
+        next: count < limit || numStart === last ? null : numStart + 1,
+        prev: numStart === 0 || numStart === 1 ? null : numStart - 1,
+        first: numStart === 1 ? null : 1,
+        last: numStart === last ? null : last
       }
     }
     return result
@@ -64,5 +65,9 @@ module.exports = {
         return 400
       }
     }
+  },
+  redisInstance: () => {
+    const client = redis.createClient(process.env.PORT_REDIS)
+    return client
   }
 }

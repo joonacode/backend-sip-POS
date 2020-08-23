@@ -1,31 +1,36 @@
 const categoryModels = require('../models/category.model')
 const helpers = require('../helpers/helpers')
 const errorHandling = require('../helpers/errorHandling')
-
 const product = {
   getAllCategory: (req, res) => {
-    categoryModels.getAllCategory()
+    const order = req.query.order
+    categoryModels.getAllCategory(order)
       .then(response => {
         const resultCategory = response
+        helpers.redisInstance().setex('getAllCategories', 60 * 60 * 12, JSON.stringify(resultCategory))
         helpers.response(res, resultCategory, res.statusCode, helpers.status.found, null)
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)
       })
   },
   insertCategory: (req, res) => {
-    const { name } = req.body
+    const {
+      name
+    } = req.body
     const newCheck = [{
       name: 'Name',
       value: name,
       type: 'string'
-    }
-    ]
+    }]
 
     errorHandling(res, newCheck, () => {
-      const newCategory = { name }
+      const newCategory = {
+        name
+      }
       categoryModels.insertCategory(newCategory)
         .then(response => {
           const resultCategory = response
+          helpers.redisInstance().del('getAllCategories')
           helpers.response(res, resultCategory, res.statusCode, helpers.status.insert, null)
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err)
@@ -33,13 +38,14 @@ const product = {
     })
   },
   updateCategory: (req, res) => {
-    const { name } = req.body
+    const {
+      name
+    } = req.body
     const newCheck = [{
       name: 'Name',
       value: name,
       type: 'string'
-    }
-    ]
+    }]
     errorHandling(res, newCheck, () => {
       const newCategory = {
         name,
@@ -49,6 +55,7 @@ const product = {
       categoryModels.updateCategory(newCategory, id)
         .then(response => {
           const resultCategory = response
+          helpers.redisInstance().del('getAllCategories')
           helpers.response(res, resultCategory, res.statusCode, helpers.status.update, null)
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err)
@@ -60,6 +67,7 @@ const product = {
     categoryModels.deleteCategory(id)
       .then(response => {
         const resultCategory = response
+        helpers.redisInstance().del('getAllCategories')
         helpers.response(res, resultCategory, res.statusCode, helpers.status.delete, null)
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)
