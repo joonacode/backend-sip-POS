@@ -3,13 +3,12 @@ const router = express.Router()
 const productController = require('../controllers/product.controller')
 const auth = require('../middlewares/auth')
 const uploadFile = require('../middlewares/multer')
-const redis = require('../middlewares/redis')
 
 router
-  .get('/', auth, productController.getAllProduct)
-  .post('/', auth, uploadFile, productController.insertProduct)
-  .patch('/:id', auth, productController.updateProduct)
-  .delete('/:id', auth, productController.deleteProduct)
-  .get('/:id', auth, productController.getProductById)
+  .get('/', auth.verifyToken, auth.isCashierOrAdmin, productController.getAllProduct)
+  .post('/', auth.verifyToken, auth.isAdmin, uploadFile, productController.insertProduct)
+  .patch('/:id', auth.verifyToken, auth.isAdmin, uploadFile, productController.updateProduct)
+  .delete('/:id', auth.verifyToken, auth.isAdmin, productController.deleteProduct)
+  .get('/:id', auth.verifyToken, auth.isCashierOrAdmin, productController.getProductById)
 
 module.exports = router

@@ -36,7 +36,6 @@ module.exports = {
   },
   cacheAllUsers: (req, res, next) => {
     client.get('getAllUsers', (err, data) => {
-      console.log(data)
       if (err) throw err
       if (data) {
         helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)

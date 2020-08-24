@@ -8,7 +8,7 @@ var jwt = require('jsonwebtoken');
 const user = {
 
   getAllUser: (req, res) => {
-    const id = req.body.id
+    const id = req.userId
     if (!id) return helpers.response(res, [], 400, null, null, ['Id not found'])
     const order = req.query.order || 'DESC'
     userModels.getAllUser(id, order).then(response => {
@@ -26,6 +26,84 @@ const user = {
     }).catch(err => {
       helpers.response(res, [], err.statusCode, null, null, err)
     })
+  },
+  updateUser: (req, res) => {
+    const {
+      name,
+      email,
+      gender,
+      roleId,
+      status
+    } = req.body
+    const id = req.params.id
+    console.log(id)
+
+    const newCheck = [{
+        name: 'Name',
+        value: name,
+        type: 'string'
+      },
+      {
+        name: 'Gender',
+        value: gender,
+        type: 'string'
+      },
+      {
+        name: 'Email',
+        value: email,
+        type: 'string'
+      },
+      {
+        name: 'Role',
+        value: roleId,
+        type: 'number'
+      }
+    ]
+
+    errorHandling(res, newCheck, async () => {
+      let isEmailExist = 0
+      // try {
+      //   const resEmail = await userModels.checkEmailExist(email)
+      //   isEmailExist = resEmail[0].totalFound
+      // } catch (error) {
+      //   helpers.response(res, [], error.statusCode, null, null, error)
+      // }
+      const checkEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+      if (!checkEmail) {
+        return helpers.response(res, [], 400, null, null, ['Invalid email'])
+      } else if (isEmailExist > 0) {
+        return helpers.response(res, [], 400, null, null, ['Email exist'])
+      } else if (gender !== 'm' && gender !== 'w') {
+        return helpers.response(res, [], 400, null, null, ['Invalid gender'])
+      } else if (status !== '0' && status !== '1') {
+        return helpers.response(res, [], 400, null, null, ['Invalid status'])
+      } else {
+        const newUser = {
+          name,
+          email,
+          gender,
+          roleId,
+          status
+        }
+        userModels.updateUser(newUser, id).then(response => {
+          helpers.redisInstance().del('getAllUsers')
+          helpers.response(res, response, res.statusCode, helpers.status.update, null)
+        }).catch(error => {
+          helpers.response(res, [], error.statusCode, null, null, error.errno === 1452 ? ['Role not found'] : error)
+        })
+
+      }
+    })
+  },
+  deleteUser: (req, res) => {
+    const id = req.params.id
+    userModels.deleteUser(id)
+      .then(response => {
+        const resultUser = response
+        helpers.response(res, resultUser, res.statusCode, helpers.status.delete, null)
+      }).catch(err => {
+        helpers.response(res, [], err.statusCode, null, null, err)
+      })
   },
   register: (req, res) => {
     const {
@@ -78,8 +156,10 @@ const user = {
         return helpers.response(res, [], 400, null, null, ['Email exist'])
       } else if (gender !== 'm' && gender !== 'w') {
         return helpers.response(res, [], 400, null, null, ['Invalid gender'])
-      } else if (password.length < 6 || passwordVerification.length < 6) {
+      } else if (password.length < 6) {
         return helpers.response(res, [], 400, null, null, ['Password min 6 character'])
+      } else if (passwordVerification.length < 6) {
+        return helpers.response(res, [], 400, null, null, ['Verification Password min 6 character'])
       } else if (password !== passwordVerification) {
         return helpers.response(res, [], 400, null, null, ['Password not match with verification'])
       } else {
@@ -124,6 +204,9 @@ const user = {
     errorHandling(res, newCheck, () => {
       userModels.login(email).then(response => {
         const newResponse = response[0]
+        if (newResponse.status !== 1) {
+          return helpers.response(res, [], 404, null, null, ['Your account is disabled'])
+        }
         bcrypt.compare(password, newResponse.password, function (err, result) {
           if (result) {
             delete newResponse.password

@@ -1,6 +1,7 @@
 const productModels = require('../models/product.model')
 const helpers = require('../helpers/helpers')
 const errorHandling = require('../helpers/errorHandling')
+const fs = require('fs')
 let totalData
 const product = {
   getAllProduct: (req, res) => {
@@ -92,9 +93,16 @@ const product = {
     const {
       name,
       price,
-      image,
+      oldImage,
       idCategory
     } = req.body
+    let image
+    if (req.file) {
+      image = req.file.path
+    }
+    if (req.uploadErrorMessage) {
+      return helpers.response(res, [], 400, null, null, [req.uploadErrorMessage])
+    }
     const newCheck = [{
         name: 'Name',
         value: name,
@@ -106,11 +114,6 @@ const product = {
         type: 'number'
       },
       {
-        name: 'Image',
-        value: image,
-        type: 'string'
-      },
-      {
         name: 'Category',
         value: idCategory,
         type: 'number'
@@ -118,18 +121,34 @@ const product = {
     ]
 
     errorHandling(res, newCheck, () => {
+      let finalImage
+      if (image) {
+        finalImage = `${process.env.BASE_URL}/${image}`
+        const pathDelete = oldImage.replace(process.env.BASE_URL, '.')
+        fs.unlinkSync(pathDelete, error => {
+          if (error) throw error
+        })
+      } else {
+        finalImage = oldImage
+      }
       const newProduct = {
         name,
         price,
-        image,
+        image: finalImage,
         idCategory,
         updatedAt: new Date()
       }
+
       const id = req.params.id
       productModels.updateProduct(newProduct, id)
         .then(response => {
-          const resultProduct = response
-          helpers.response(res, resultProduct, res.statusCode, helpers.status.update, null)
+          productModels.getProductById(id)
+            .then(responseResult => {
+              const resultProduct = responseResult
+              helpers.response(res, resultProduct, res.statusCode, helpers.status.update, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err.errno === 1452 ? ['Category not found'] : err)
         })
@@ -138,13 +157,24 @@ const product = {
 
   deleteProduct: (req, res) => {
     const id = req.params.id
-    productModels.deleteProduct(id)
+    productModels.getProductById(id)
       .then(response => {
-        const resultProduct = response
-        helpers.response(res, resultProduct, res.statusCode, helpers.status.delete, null)
+        const resultProduct = response[0].image
+        const pathDelete = resultProduct.replace(process.env.BASE_URL, '.')
+        fs.unlinkSync(pathDelete, error => {
+          if (error) throw error
+        })
+        productModels.deleteProduct(id)
+          .then(response => {
+            const resultProduct = response
+            helpers.response(res, resultProduct, res.statusCode, helpers.status.delete, null)
+          }).catch(err => {
+            helpers.response(res, [], err.statusCode, null, null, err)
+          })
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)
       })
+
   },
 
   getProductById: (req, res) => {
