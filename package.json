@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "standard && node app.js",
+    "fix": "standard && node app.js",
     "dev": "nodemon app.js"
   },
   "keywords": [],

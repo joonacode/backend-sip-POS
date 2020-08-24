@@ -3,7 +3,7 @@ const connection = require('../config/db.config')
 
 const category = {
   getAllCategory: (order) => {
-    return queryHelper(`SELECT * FROM categories ORDER BY id ${order ? order : 'desc'}`)
+    return queryHelper(`SELECT * FROM categories ORDER BY id ${order || 'desc'}`)
   },
   insertCategory: (newProduct) => {
     return queryHelper('INSERT INTO categories SET ?', newProduct)

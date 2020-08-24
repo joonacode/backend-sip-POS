@@ -22,25 +22,25 @@ const history = {
       amount
     } = req.body
     const newCheck = [{
-        name: 'Invoice',
-        value: invoice,
-        type: 'string'
-      },
-      {
-        name: 'Cashier',
-        value: cashier,
-        type: 'string'
-      },
-      {
-        name: 'Orders',
-        value: orders,
-        type: 'string'
-      },
-      {
-        name: 'Amount',
-        value: amount,
-        type: 'number'
-      }
+      name: 'Invoice',
+      value: invoice,
+      type: 'string'
+    },
+    {
+      name: 'Cashier',
+      value: cashier,
+      type: 'string'
+    },
+    {
+      name: 'Orders',
+      value: orders,
+      type: 'string'
+    },
+    {
+      name: 'Amount',
+      value: amount,
+      type: 'number'
+    }
     ]
     errorHandling(res, newCheck, () => {
       const newHistory = {
@@ -67,25 +67,25 @@ const history = {
       amount
     } = req.body
     const newCheck = [{
-        name: 'Invoice',
-        value: invoice,
-        type: 'string'
-      },
-      {
-        name: 'Cashier',
-        value: cashier,
-        type: 'string'
-      },
-      {
-        name: 'Orders',
-        value: orders,
-        type: 'string'
-      },
-      {
-        name: 'Amount',
-        value: amount,
-        type: 'number'
-      }
+      name: 'Invoice',
+      value: invoice,
+      type: 'string'
+    },
+    {
+      name: 'Cashier',
+      value: cashier,
+      type: 'string'
+    },
+    {
+      name: 'Orders',
+      value: orders,
+      type: 'string'
+    },
+    {
+      name: 'Amount',
+      value: amount,
+      type: 'number'
+    }
     ]
 
     errorHandling(res, newCheck, () => {

@@ -1,5 +1,5 @@
 require('dotenv').config()
-const baseUrl = `http://localhost:${process.env.PORT}/api/v1`
+// const baseUrl = `http://localhost:${process.env.PORT}/api/v1`
 const redis = require('redis')
 module.exports = {
   response: (res, results, status, message, links, error) => {

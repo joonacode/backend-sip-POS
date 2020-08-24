@@ -13,11 +13,11 @@ var storage = multer.diskStorage({
 })
 
 const filter = (req, file, cb) => {
-  if (file.mimetype !== "image/png" && file.mimetype !== "image/jpg" && file.mimetype !== "image/jpeg") {
-    cb(null, false);
+  if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpg' && file.mimetype !== 'image/jpeg') {
+    cb(null, false)
     return req.uploadErrorMessage = 'Only image allowed'
   } else {
-    cb(null, true);
+    cb(null, true)
   }
 }
 
@@ -35,7 +35,7 @@ const uploadFile = (req, res, next) => {
   upload(req, res, function (error) {
     if (error) {
       console.log(error)
-      if (error.code == 'LIMIT_FILE_SIZE') return helpers.response(res, [], 400, null, null, ['Max file size 2mb'])
+      if (error.code === 'LIMIT_FILE_SIZE') return helpers.response(res, [], 400, null, null, ['Max file size 2mb'])
       return helpers.response(res, [], 400, null, null, error)
     } else {
       next()

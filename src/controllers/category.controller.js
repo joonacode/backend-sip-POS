@@ -29,9 +29,15 @@ const product = {
       }
       categoryModels.insertCategory(newCategory)
         .then(response => {
-          const resultCategory = response
           helpers.redisInstance().del('getAllCategories')
-          helpers.response(res, resultCategory, res.statusCode, helpers.status.insert, null)
+
+          categoryModels.getCategoryById(response.insertId)
+            .then(responseCategory => {
+              const resultCategory = responseCategory
+              helpers.response(res, resultCategory, res.statusCode, helpers.status.insert, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err)
         })
@@ -54,9 +60,15 @@ const product = {
       const id = req.params.id
       categoryModels.updateCategory(newCategory, id)
         .then(response => {
-          const resultCategory = response
           helpers.redisInstance().del('getAllCategories')
-          helpers.response(res, resultCategory, res.statusCode, helpers.status.update, null)
+
+          categoryModels.getCategoryById(id)
+            .then(responseCategory => {
+              const resultCategory = responseCategory
+              helpers.response(res, resultCategory, res.statusCode, helpers.status.update, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(err => {
           helpers.response(res, [], err.statusCode, null, null, err)
         })

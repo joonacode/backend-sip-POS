@@ -3,7 +3,8 @@ const saltRounds = 12
 const helpers = require('../helpers/helpers')
 const errorHandling = require('../helpers/errorHandling')
 const userModels = require('../models/user.model')
-var jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken')
+const fs = require('fs')
 
 const user = {
 
@@ -31,13 +32,19 @@ const user = {
     const {
       name,
       email,
+      oldImage,
       gender,
       roleId,
       status
     } = req.body
     const id = req.params.id
-    console.log(id)
-
+    let image
+    if (req.file) {
+      image = req.file.path
+    }
+    if (req.uploadErrorMessage) {
+      return helpers.response(res, [], 400, null, null, [req.uploadErrorMessage])
+    }
     const newCheck = [{
         name: 'Name',
         value: name,
@@ -49,11 +56,6 @@ const user = {
         type: 'string'
       },
       {
-        name: 'Email',
-        value: email,
-        type: 'string'
-      },
-      {
         name: 'Role',
         value: roleId,
         type: 'number'
@@ -61,7 +63,7 @@ const user = {
     ]
 
     errorHandling(res, newCheck, async () => {
-      let isEmailExist = 0
+      const isEmailExist = 0
       // try {
       //   const resEmail = await userModels.checkEmailExist(email)
       //   isEmailExist = resEmail[0].totalFound
@@ -78,20 +80,41 @@ const user = {
       } else if (status !== '0' && status !== '1') {
         return helpers.response(res, [], 400, null, null, ['Invalid status'])
       } else {
+        let finalImage
+        if (image) {
+          if (oldImage === '') {
+            finalImage = `${process.env.BASE_URL}/${image}`
+          } else {
+            finalImage = `${process.env.BASE_URL}/${image}`
+            const pathDelete = oldImage.replace(process.env.BASE_URL, '.')
+            fs.unlinkSync(pathDelete, error => {
+              if (error) throw error
+            })
+          }
+
+        } else {
+          finalImage = oldImage
+        }
         const newUser = {
           name,
           email,
           gender,
+          image: finalImage,
           roleId,
           status
         }
         userModels.updateUser(newUser, id).then(response => {
           helpers.redisInstance().del('getAllUsers')
-          helpers.response(res, response, res.statusCode, helpers.status.update, null)
+          userModels.getUserById(id)
+            .then(responseUser => {
+              const resultUser = responseUser
+              helpers.response(res, resultUser, res.statusCode, helpers.status.update, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(error => {
           helpers.response(res, [], error.statusCode, null, null, error.errno === 1452 ? ['Role not found'] : error)
         })
-
       }
     })
   },
@@ -138,7 +161,7 @@ const user = {
         name: 'Password verification',
         value: passwordVerification,
         type: 'string'
-      },
+      }
     ]
 
     errorHandling(res, newCheck, async () => {
@@ -153,7 +176,7 @@ const user = {
       if (!checkEmail) {
         return helpers.response(res, [], 400, null, null, ['Invalid email'])
       } else if (isEmailExist > 0) {
-        return helpers.response(res, [], 400, null, null, ['Email exist'])
+        return helpers.response(res, [], 400, null, null, ['Email already exist'])
       } else if (gender !== 'm' && gender !== 'w') {
         return helpers.response(res, [], 400, null, null, ['Invalid gender'])
       } else if (password.length < 6) {
@@ -175,11 +198,17 @@ const user = {
             }
             userModels.register(newUser).then(response => {
               helpers.redisInstance().del('getAllUsers')
-              helpers.response(res, response, res.statusCode, helpers.status.insert, null)
+
+              userModels.getUserById(response.insertId)
+                .then(responseUser => {
+                  const resultUser = responseUser
+                  helpers.response(res, resultUser, res.statusCode, helpers.status.insert, null)
+                }).catch(err => {
+                  helpers.response(res, [], err.statusCode, null, null, err)
+                })
             }).catch(error => {
               helpers.response(res, [], error.statusCode, null, null, error)
             })
-
           })
         })
       }
@@ -216,19 +245,18 @@ const user = {
               data: newResponse
             }, process.env.PRIVATE_KEY, {
               expiresIn: '1d'
-            });
+            })
             newResponse.token = token
             helpers.response(res, newResponse, res.statusCode, 'Login success', null)
           } else {
             helpers.response(res, [], 404, null, null, ['Wrong email or password'])
           }
-        });
+        })
       }).catch(error => {
         helpers.response(res, [], error.statusCode, null, null, ['Wrong email or password'])
       })
     })
-
-  },
+  }
 }
 
 module.exports = user

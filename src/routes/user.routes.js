@@ -1,15 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user.controller')
-const redis = require('../middlewares/redis')
-const auth = require('../middlewares/auth')
+const uploadFile = require('../middlewares/multer')
+
+const {
+  cacheAllUsers
+} = require('../middlewares/redis')
+const {
+  verifyToken,
+  isAdmin,
+  isCashierOrAdmin
+} = require('../middlewares/auth')
 
 router
-  .get('/', auth.verifyToken, auth.isAdmin, redis.cacheAllUsers, userController.getAllUser)
+  .get('/', verifyToken, isAdmin, cacheAllUsers, userController.getAllUser)
   .post('/register', userController.register)
   .post('/login', userController.login)
-  .patch('/:id', auth.verifyToken, auth.isCashierOrAdmin, userController.updateUser)
-  .delete('/:id', auth.verifyToken, auth.isAdmin, userController.deleteUser)
-  .get('/:id', auth.verifyToken, auth.isCashierOrAdmin, userController.getUserById)
+  .patch('/:id', verifyToken, isCashierOrAdmin, uploadFile, userController.updateUser)
+  .delete('/:id', verifyToken, isAdmin, userController.deleteUser)
+  .get('/:id', verifyToken, isCashierOrAdmin, userController.getUserById)
 
 module.exports = router

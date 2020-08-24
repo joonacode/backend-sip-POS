@@ -174,7 +174,6 @@ const product = {
       }).catch(err => {
         helpers.response(res, [], err.statusCode, null, null, err)
       })
-
   },
 
   getProductById: (req, res) => {
