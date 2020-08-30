@@ -17,35 +17,35 @@ const history = {
   insertHistory: (req, res) => {
     const {
       invoice,
-      cashier,
+      idUser,
       orders,
       amount
     } = req.body
     const newCheck = [{
-      name: 'Invoice',
-      value: invoice,
-      type: 'string'
-    },
-    {
-      name: 'Cashier',
-      value: cashier,
-      type: 'string'
-    },
-    {
-      name: 'Orders',
-      value: orders,
-      type: 'string'
-    },
-    {
-      name: 'Amount',
-      value: amount,
-      type: 'number'
-    }
+        name: 'Invoice',
+        value: invoice,
+        type: 'string'
+      },
+      {
+        name: 'Cashier',
+        value: idUser,
+        type: 'number'
+      },
+      {
+        name: 'Orders',
+        value: orders,
+        type: 'string'
+      },
+      {
+        name: 'Amount',
+        value: amount,
+        type: 'number'
+      }
     ]
     errorHandling(res, newCheck, () => {
       const newHistory = {
         invoice,
-        cashier,
+        idUser,
         orders,
         amount
       }
@@ -53,56 +53,67 @@ const history = {
         .then(response => {
           const resultHistory = response
           helpers.redisInstance().del('getAllHistories')
-          helpers.response(res, resultHistory, res.statusCode, helpers.status.insert, null)
+          historyModels.getHistoryById(resultHistory.insertId)
+            .then(response => {
+              const resultHistory = response[0]
+              helpers.response(res, resultHistory, res.statusCode, helpers.status.insert, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(err => {
-          helpers.response(res, [], err.statusCode, null, null, err)
+          helpers.response(res, [], err.statusCode, null, null, err.errno === 1452 ? ['Cashier not found'] : err)
         })
     })
   },
   updateHistory: (req, res) => {
     const {
       invoice,
-      cashier,
+      idUser,
       orders,
       amount
     } = req.body
     const newCheck = [{
-      name: 'Invoice',
-      value: invoice,
-      type: 'string'
-    },
-    {
-      name: 'Cashier',
-      value: cashier,
-      type: 'string'
-    },
-    {
-      name: 'Orders',
-      value: orders,
-      type: 'string'
-    },
-    {
-      name: 'Amount',
-      value: amount,
-      type: 'number'
-    }
+        name: 'Invoice',
+        value: invoice,
+        type: 'string'
+      },
+      {
+        name: 'Cashier',
+        value: idUser,
+        type: 'number'
+      },
+      {
+        name: 'Orders',
+        value: orders,
+        type: 'string'
+      },
+      {
+        name: 'Amount',
+        value: amount,
+        type: 'number'
+      }
     ]
 
     errorHandling(res, newCheck, () => {
       const newHistory = {
         invoice,
-        cashier,
+        idUser,
         orders,
         amount
       }
       const id = req.params.id
       historyModels.updateHistory(newHistory, id)
         .then(response => {
-          const resultHistory = response
           helpers.redisInstance().del('getAllHistories')
-          helpers.response(res, resultHistory, res.statusCode, helpers.status.update, null)
+          historyModels.getHistoryById(id)
+            .then(response => {
+              const resultHistory = response[0]
+              helpers.response(res, resultHistory, res.statusCode, helpers.status.update, null)
+            }).catch(err => {
+              helpers.response(res, [], err.statusCode, null, null, err)
+            })
         }).catch(err => {
-          helpers.response(res, [], err.statusCode, null, null, err)
+          helpers.response(res, [], err.statusCode, null, null, err.errno === 1452 ? ['Cashier not found'] : err)
         })
     })
   },

@@ -14,9 +14,10 @@ const {
 
 router
   .get('/', verifyToken, isAdmin, cacheAllUsers, userController.getAllUser)
-  .post('/register', userController.register)
-  .post('/login', userController.login)
-  .patch('/:id', verifyToken, isCashierOrAdmin, uploadFile, userController.updateUser)
+  .post('/', verifyToken, isAdmin, userController.addUser)
+  .patch('/profile/:id', verifyToken, isCashierOrAdmin, uploadFile, userController.updateProfile)
+  .patch('/change-password/:id', verifyToken, isCashierOrAdmin, userController.changePassword)
+  .patch('/:id', verifyToken, isAdmin, uploadFile, userController.updateUser)
   .delete('/:id', verifyToken, isAdmin, userController.deleteUser)
   .get('/:id', verifyToken, isCashierOrAdmin, userController.getUserById)
 
