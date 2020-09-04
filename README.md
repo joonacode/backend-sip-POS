@@ -1,6 +1,6 @@
 # Sip POS API
 ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/joonacode/backend-sip-POS)
-<br>
+
 This API is for Sip POS App.
 
 ## Build with
@@ -23,7 +23,7 @@ npm install
 ### Install nodemon
 
 Nodemon is a tool that helps develop node.js based applications by automatically restarting the node application when file changes in the directory are detected.
-<br><br>
+
 If you have already installed, skip this step.
 
 ```
