@@ -36,10 +36,19 @@ const isCashierOrAdmin = (req, res, next) => {
   return helpers.response(res, [], 403, null, null, 'Only admin and cashier can access')
 }
 
+const isMemberOrCashierOrAdmin = (req, res, next) => {
+  if (req.roleId === 3 || req.roleId === 2 || req.roleId === 1) {
+    next()
+    return
+  }
+  return helpers.response(res, [], 403, null, null, 'Only admin, cashier, and member can access')
+}
+
 const auth = {
   verifyToken,
   isAdmin,
-  isCashierOrAdmin
+  isCashierOrAdmin,
+  isMemberOrCashierOrAdmin
 }
 
 module.exports = auth

@@ -1,6 +1,5 @@
 const categoryModels = require('../models/category.model')
 const helpers = require('../helpers/helpers')
-const errorHandling = require('../helpers/errorHandling')
 const product = {
   getAllCategory: (req, res) => {
     const order = req.query.order
@@ -17,62 +16,44 @@ const product = {
     const {
       name
     } = req.body
-    const newCheck = [{
-      name: 'Name',
-      value: name,
-      type: 'string'
-    }]
-
-    errorHandling(res, newCheck, () => {
-      const newCategory = {
+    categoryModels.insertCategory({
         name
-      }
-      categoryModels.insertCategory(newCategory)
-        .then(response => {
-          helpers.redisInstance().del('getAllCategories')
-
-          categoryModels.getCategoryById(response.insertId)
-            .then(responseCategory => {
-              const resultCategory = responseCategory
-              helpers.response(res, resultCategory, res.statusCode, helpers.status.insert, null)
-            }).catch(err => {
-              helpers.response(res, [], err.statusCode, null, null, err)
-            })
-        }).catch(err => {
-          helpers.response(res, [], err.statusCode, null, null, err)
-        })
-    })
+      })
+      .then(response => {
+        helpers.redisInstance().del('getAllCategories')
+        categoryModels.getCategoryById(response.insertId)
+          .then(responseCategory => {
+            helpers.response(res, responseCategory, res.statusCode, helpers.status.insert, null)
+          }).catch(err => {
+            helpers.response(res, [], err.statusCode, null, null, err)
+          })
+      }).catch(err => {
+        helpers.response(res, [], err.statusCode, null, null, err)
+      })
   },
   updateCategory: (req, res) => {
     const {
       name
     } = req.body
-    const newCheck = [{
-      name: 'Name',
-      value: name,
-      type: 'string'
-    }]
-    errorHandling(res, newCheck, () => {
-      const newCategory = {
-        name,
-        updatedAt: new Date()
-      }
-      const id = req.params.id
-      categoryModels.updateCategory(newCategory, id)
-        .then(response => {
-          helpers.redisInstance().del('getAllCategories')
+    const newCategory = {
+      name,
+      updatedAt: new Date()
+    }
+    const id = req.params.id
+    categoryModels.updateCategory(newCategory, id)
+      .then(response => {
+        helpers.redisInstance().del('getAllCategories')
 
-          categoryModels.getCategoryById(id)
-            .then(responseCategory => {
-              const resultCategory = responseCategory
-              helpers.response(res, resultCategory, res.statusCode, helpers.status.update, null)
-            }).catch(err => {
-              helpers.response(res, [], err.statusCode, null, null, err)
-            })
-        }).catch(err => {
-          helpers.response(res, [], err.statusCode, null, null, err)
-        })
-    })
+        categoryModels.getCategoryById(id)
+          .then(responseCategory => {
+            const resultCategory = responseCategory
+            helpers.response(res, resultCategory, res.statusCode, helpers.status.update, null)
+          }).catch(err => {
+            helpers.response(res, [], err.statusCode, null, null, err)
+          })
+      }).catch(err => {
+        helpers.response(res, [], err.statusCode, null, null, err)
+      })
   },
   deleteCategory: (req, res) => {
     const id = req.params.id

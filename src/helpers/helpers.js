@@ -1,4 +1,5 @@
 require('dotenv').config()
+const nodemailer = require('nodemailer')
 // const baseUrl = `http://localhost:${process.env.PORT}/api/v1`
 const redis = require('redis')
 module.exports = {
@@ -69,5 +70,30 @@ module.exports = {
   redisInstance: () => {
     const client = redis.createClient(process.env.PORT_REDIS)
     return client
+  },
+  transporter: (mailinfo, cb) => {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.PASS_USER
+      }
+    });
+    transporter.sendMail(mailinfo, (error, info) => {
+      if (error) {
+        console.log(error)
+        this.response(res, [], 400, null, null, ['email failed to send'])
+      } else {
+        return cb()
+      }
+    })
+  },
+  formatNumber: (number) => {
+    const reverse = number.toString().split('').reverse().join('')
+    const ribuan = reverse.match(/\d{1,3}/g);
+    const result = ribuan.join('.').split('').reverse().join('');
+    return result
   }
 }

@@ -6,9 +6,8 @@ module.exports = {
   cacheAllProducts: (req, res, next) => {
     client.get('getAllProducts', (err, data) => {
       if (err) throw err
-      const dataArray = JSON.parse(data)
-      if (data !== null) {
-        helpers.response(res, dataArray[1], 200, helpers.status.found, dataArray[0])
+      if (data) {
+        helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)
       } else {
         next()
       }
@@ -34,8 +33,28 @@ module.exports = {
       }
     })
   },
+  cacheMyHistories: (req, res, next) => {
+    client.get('getMyHistories', (err, data) => {
+      if (err) throw err
+      if (data) {
+        helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)
+      } else {
+        next()
+      }
+    })
+  },
   cacheAllUsers: (req, res, next) => {
     client.get('getAllUsers', (err, data) => {
+      if (err) throw err
+      if (data) {
+        helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)
+      } else {
+        next()
+      }
+    })
+  },
+  cacheAllMember: (req, res, next) => {
+    client.get('getAllMember', (err, data) => {
       if (err) throw err
       if (data) {
         helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)
@@ -47,6 +66,17 @@ module.exports = {
 
   cacheDetailUser: (req, res, next) => {
     client.get('getDetailUser', (err, data) => {
+      if (err) throw err
+      if (data) {
+        helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)
+      } else {
+        next()
+      }
+    })
+  },
+
+  cacheSetting: (req, res, next) => {
+    client.get('getSetting', (err, data) => {
       if (err) throw err
       if (data) {
         helpers.response(res, JSON.parse(data), 200, helpers.status.found, null)

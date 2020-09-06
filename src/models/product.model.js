@@ -14,6 +14,10 @@ const product = {
     const query = `SELECT products.*, categories.name as categoryName FROM products JOIN categories on products.idCategory = categories.id ${search ? `WHERE products.name LIKE '%${search}%'` : ''} ORDER BY ${order} ${sorting} LIMIT ${limit} OFFSET ${offset}`
     return queryHelper(query)
   },
+  getAllProductNoPaging: () => {
+    const query = `SELECT products.*, categories.name as categoryName FROM products JOIN categories on products.idCategory = categories.id ORDER BY id DESC`
+    return queryHelper(query)
+  },
   insertProduct: (newProduct) => {
     return queryHelper('INSERT INTO products SET ?', newProduct)
   },

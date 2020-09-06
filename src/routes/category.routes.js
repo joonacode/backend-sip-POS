@@ -4,17 +4,20 @@ const categoryController = require('../controllers/category.controller')
 const {
   verifyToken,
   isAdmin,
-  isCashierOrAdmin
+  isMemberOrCashierOrAdmin
 } = require('../middlewares/auth')
 const {
   cacheAllCategories
 } = require('../middlewares/redis')
+const {
+  checkCategory
+} = require('../middlewares/formErrorHandling')
 
 router
-  .get('/', verifyToken, isCashierOrAdmin, cacheAllCategories, categoryController.getAllCategory)
-  .post('/', verifyToken, isAdmin, categoryController.insertCategory)
-  .patch('/:id', verifyToken, isAdmin, categoryController.updateCategory)
+  .get('/', verifyToken, isMemberOrCashierOrAdmin, cacheAllCategories, categoryController.getAllCategory)
+  .post('/', verifyToken, isAdmin, checkCategory, categoryController.insertCategory)
+  .patch('/:id', verifyToken, isAdmin, checkCategory, categoryController.updateCategory)
   .delete('/:id', verifyToken, isAdmin, categoryController.deleteCategory)
-  .get('/:id', verifyToken, isCashierOrAdmin, categoryController.getCategoryById)
+  .get('/:id', verifyToken, isMemberOrCashierOrAdmin, categoryController.getCategoryById)
 
 module.exports = router

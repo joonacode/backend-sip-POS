@@ -4,6 +4,9 @@ const history = {
   getAllHistory: (order) => {
     return queryHelper(`SELECT histories.*, users.name as cashier FROM histories JOIN users WHERE histories.idUser = users.id ORDER BY id ${!order ? 'desc' : order}`)
   },
+  getMyHistory: (order, id) => {
+    return queryHelper(`SELECT histories.*, users.name as cashier FROM histories JOIN users WHERE histories.idUser = users.id AND isMember = ${id} ORDER BY id ${!order ? 'desc' : order}`)
+  },
   insertHistory: (newHistory) => {
     return queryHelper('INSERT INTO histories SET ?', newHistory)
   },
