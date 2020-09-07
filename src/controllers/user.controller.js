@@ -54,24 +54,20 @@ const user = {
       })
   },
   updateProfile: (req, res) => {
-    const { name, oldImage } = req.body
+    const {
+      name,
+      oldImage
+    } = req.body
     const id = req.params.id
     let image
-    if (req.file) {
-      image = req.file.path
-    }
-    if (req.uploadErrorMessage) {
-      return helpers.response(res, [], 400, null, null, [
-        req.uploadErrorMessage,
-      ])
-    }
-    const newCheck = [
-      {
-        name: 'Name',
-        value: name,
-        type: 'string',
-      },
-    ]
+    if (req.file) image = req.file.path
+    if (req.uploadErrorMessage) return helpers.response(res, [], 400, null, null, [req.uploadErrorMessage])
+
+    const newCheck = [{
+      name: 'Name',
+      value: name,
+      type: 'string',
+    }, ]
 
     errorHandling(res, newCheck, async () => {
       let finalImage
@@ -126,7 +122,14 @@ const user = {
     })
   },
   updateUser: async (req, res) => {
-    const { name, email, oldImage, gender, roleId, status } = req.body
+    const {
+      name,
+      email,
+      oldImage,
+      gender,
+      roleId,
+      status
+    } = req.body
 
     const id = req.params.id
     let image
@@ -213,7 +216,14 @@ const user = {
       })
   },
   addUser: (req, res) => {
-    const { name, email, gender, roleId, status, password } = req.body
+    const {
+      name,
+      email,
+      gender,
+      roleId,
+      status,
+      password
+    } = req.body
 
     bcrypt.genSalt(saltRounds, function (err, salt) {
       bcrypt.hash(password, salt, function (err, hash) {
@@ -255,8 +265,13 @@ const user = {
     })
   },
   changePassword: (req, res) => {
-    const { oldPassword, newPassword } = req.body
-    const { id } = req.params
+    const {
+      oldPassword,
+      newPassword
+    } = req.body
+    const {
+      id
+    } = req.params
 
     userModels
       .getUserById(id)
