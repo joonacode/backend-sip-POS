@@ -1,7 +1,7 @@
 # Sip POS API
 ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/joonacode/backend-sip-POS)
 
-This API is for Sip POS App.
+Sip POS API is a Restful API that contains product, user, category, history, etc. data used to run the Sip POS application.
 
 ## Build with
 * [Node.js](https://nodejs.org/en/)
@@ -59,7 +59,7 @@ npm run dev
 
 ## API documentation link
 
-See [Documentation API](https://web.postman.co/collections/8880894-03d60989-726d-4d77-ab2c-02241e8949b3?version=latest&workspace=f12d1656-1560-4d11-8735-731df903b216)
+See [Documentation API](https://documenter.getpostman.com/view/8880894/TVCiSkpn)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
