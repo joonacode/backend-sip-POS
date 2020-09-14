@@ -1,7 +1,7 @@
 # Sip POS API
 ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/joonacode/backend-sip-POS)
 
-Tokofuku is an online shop website that is made specifically for e-commerce purposes, for many features to support transactions in online stores
+This API is for Sip POS App.
 
 ## Build with
 * [Node.js](https://nodejs.org/en/)
@@ -39,13 +39,12 @@ PORT = 4000
 DB_HOST = localhost
 DB_USER = root
 DB_PASSWORD = your_password
-DB_DATABASE = db_tokoFUku
+DB_DATABASE = db_sipPos
 PRIVATE_KEY = your_private_key
 PRIVATE_KEY_REFRESH_TOKEN = your_private_key
 BASE_URL = http://localhost:4000
 # For Redirect User When Click Link Activation. Just Change The 'localhost:8080'
-BASE_URL_FRONTEND = http://localhost:8080/verify-account
-BASE_URL_RESET_PASSWORD = http://localhost:8080/reset-password
+BASE_URL_FRONTEND = http://localhost:8080/auth/login
 PORT_REDIS = 6379
 # For Send Email To User
 EMAIL_USER = your_email
@@ -60,7 +59,7 @@ npm run dev
 
 ## API documentation link
 
-See [Coming Soon](https://github.com/joonacode/backend-tokofuku)
+See [Documentation API](https://web.postman.co/collections/8880894-03d60989-726d-4d77-ab2c-02241e8949b3?version=latest&workspace=f12d1656-1560-4d11-8735-731df903b216)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
