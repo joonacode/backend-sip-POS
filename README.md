@@ -45,6 +45,7 @@ PRIVATE_KEY_REFRESH_TOKEN = your_private_key
 BASE_URL = http://localhost:4000
 # For Redirect User When Click Link Activation. Just Change The 'localhost:8080'
 BASE_URL_FRONTEND = http://localhost:8080/auth/login
+URL_RESET_PASSWORD = http://localhost:8080/auth/reset-password
 PORT_REDIS = 6379
 # For Send Email To User
 EMAIL_USER = your_email
