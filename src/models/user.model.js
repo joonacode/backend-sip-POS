@@ -63,6 +63,11 @@ const user = {
       email,
     )
   },
+  getUserByEmail: (email) => {
+    return queryHelper(
+      `SELECT * FROM users WHERE email = ?`, email,
+    )
+  },
   sendToken: (token) => {
     return queryHelper('INSERT INTO token SET ?', token)
   },

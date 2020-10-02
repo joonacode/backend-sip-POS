@@ -483,6 +483,87 @@ const checkForm = {
       next()
     })
   },
+  checkForgotPassword: (req, res, next) => {
+    const {
+      email,
+    } = req.body
+
+    const newCheck = [{
+      name: 'Email',
+      value: email,
+      type: 'string',
+    }]
+
+    errorHandling(res, newCheck, async () => {
+      const checkEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+        email,
+      )
+      if (!checkEmail) {
+        return helpers.response(res, [], 400, null, null, [
+          'Invalid email',
+        ])
+      } else {
+        let isEmailExist = 0
+        let emailStatus
+        try {
+          const resEmail = await userModels.checkEmailExist(email)
+          const resStatus = await userModels.getUserByEmail(email)
+          isEmailExist = resEmail[0].totalFound
+          emailStatus = resStatus[0].status
+        } catch (error) {
+          return helpers.response(res, [], error.statusCode, null, null, [
+            'Email not found',
+          ])
+        }
+        if (isEmailExist < 1) {
+          return helpers.response(res, [], 400, null, null, [
+            'Email not found',
+          ])
+        } else if (emailStatus === 2) {
+          return helpers.response(res, [], 400, null, null, [
+            'Please activate your account before resetting the password',
+          ])
+        } else if (emailStatus === 0) {
+          return helpers.response(res, [], 400, null, null, [
+            'Your account is disabled',
+          ])
+        } else {
+          next()
+
+        }
+      }
+
+    })
+  },
+
+  checkResetPassword: (req, res, next) => {
+    const {
+      password,
+      confirmPassword
+    } = req.body
+    const newCheck = [{
+        name: 'Password',
+        value: password,
+        type: 'string',
+      },
+      {
+        name: 'Confirmation Password',
+        value: confirmPassword,
+        type: 'string',
+      }
+    ]
+    errorHandling(res, newCheck, async () => {
+      if (password.length < 6) {
+        return helpers.response(res, [], 400, null, null, ['New password min 6 character'])
+      } else if (confirmPassword.length < 6) {
+        return helpers.response(res, [], 400, null, null, ['Confirmation password min 6 character'])
+      } else if (password !== confirmPassword) {
+        return helpers.response(res, [], 400, null, null, ['New password not match with confirmation password'])
+      } else {
+        next()
+      }
+    })
+  },
 
 }
 
